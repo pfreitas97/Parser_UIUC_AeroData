@@ -14,10 +14,10 @@ def findCharOccurrences(string, char):
     return [i for i, letter in enumerate(string) if letter == char]
 
 
-def UIUC_Propeller_DWrangler(path):
-    
-    
-    
+# Will return file name pitch and diameter 
+
+def Propeller_File_Selector(path, contains="all"):
+        
     files = []
     filenames = []
     
@@ -25,6 +25,8 @@ def UIUC_Propeller_DWrangler(path):
     diameters = [] # in original units for now
     
     pitches = [] # in og units
+    
+    filePaths = []
         
     
     # r=root, d=directories, f = files
@@ -42,6 +44,15 @@ def UIUC_Propeller_DWrangler(path):
     
     for i in range(len(files)):
         
+        
+       # This block prevents the inclusion of every file when required 
+        if contains != "all":
+            if files[i].find(contains) == -1:
+                continue
+        
+            
+            
+        
         currentPath = files[i]
         currentFile = currentPath[cut:]
         filenames.append(currentFile)
@@ -51,7 +62,7 @@ def UIUC_Propeller_DWrangler(path):
     # Lets extract the diamters, and pitches and name of the prop in each file
          
         
-    for i in range(len(files)):
+    for i in range(len(filenames)):
         
         currentFile = filenames[i] #propeller file
                 
@@ -78,20 +89,19 @@ def UIUC_Propeller_DWrangler(path):
         # select only the x between the desired breaks
         
         x = [X for X in x if X > breaks[0] & X < breaks[1]]
-        
-        print("diam" + currentFile[breaks[0] + 1: x[0] ])
-        
-        print("pitch" + currentFile[x[0] + 1: breaks[1] ])
-        
+                
         
         diameters.append(currentFile[breaks[0]+ 1: x[0]])
         
         
         pitches.append(currentFile[x[0] + 1: breaks[1] ])
         
+        filePaths.append(path + "/" + currentFile)
         
         
-        #TODO Add static catch
+        #In case only a subset of files is desired.
+        
+        
         
         
         
@@ -99,7 +109,7 @@ def UIUC_Propeller_DWrangler(path):
     if len(diameters) == len(filenames):
         print("Array Dimension Check Success")
         #print(filenames)
-        return [filenames,diameters,pitches]
+        return [filenames,diameters,pitches,filePaths]
     else:
         print("something broke")
         return None
