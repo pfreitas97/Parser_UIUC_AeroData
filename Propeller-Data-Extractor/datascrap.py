@@ -10,15 +10,22 @@ import os
 
 #location assumes separate folder for prop
 
+def findCharOccurrences(string, char):
+    return [i for i, letter in enumerate(string) if letter == char]
+
+
 def UIUC_Propeller_DWrangler(path):
     
     
     
     files = []
     filenames = []
-    diameter = []
-    diam = ""
     
+    
+    diameters = [] # in original units for now
+    
+    pitches = [] # in og units
+        
     
     # r=root, d=directories, f = files
     
@@ -39,48 +46,60 @@ def UIUC_Propeller_DWrangler(path):
         currentFile = currentPath[cut:]
         filenames.append(currentFile)
         
-        print(currentFile +  "still temp2")
+       # print(currentFile +  "still temp2")
         
-    # Lets extract the diamters of the prop in each file
-        
-        
+    # Lets extract the diamters, and pitches and name of the prop in each file
+         
         
     for i in range(len(files)):
+        
         currentFile = filenames[i] #propeller file
-        #print(temp)
-        brake = 0
-        count = 0
-        diam = ""
-        
-        
-        # TODO CHANGE THIS TO SOMETHING MORE DIGNIFIED
-        # Also add static file catch
-        while brake == 0:  
-            
-            if (currentFile[count] != "_"):
                 
-                count = count + 1
-            elif (currentFile[count] == "_"):
-                count = count + 1
+             
+        # Within the propeller data set the names and dimensions are encoded
+        # in the file name separated by "_" characters
+        
+        breaks = findCharOccurrences(currentFile, "_")
+        
+        
+        # Within each filename the dimensions are in the following format:
+        # _Propeller-Diameter[Inches]xPropeller-Pitch[Inches]_
+        # Where the first and second "_" are ALWAYS the 
+        #       first and second in the file
+        
+        # finding the x split within this section is then given by:
+        
+        x = findCharOccurrences(currentFile,"x")
+        
+        
+        
+        
+        
+        # select only the x between the desired breaks
+        
+        x = [X for X in x if X > breaks[0] & X < breaks[1]]
+        
+        print("diam" + currentFile[breaks[0] + 1: x[0] ])
+        
+        print("pitch" + currentFile[x[0] + 1: breaks[1] ])
+        
+        
+        diameters.append(currentFile[breaks[0]+ 1: x[0]])
+        
+        
+        pitches.append(currentFile[x[0] + 1: breaks[1] ])
+        
+        
+        
+        #TODO Add static catch
+        
+        
+        
             
-                while currentFile[count] != "x" and currentFile[count].isalpha() == 0:
-                    diam = diam + currentFile[count]
-                    count = count + 1
-                
-                if currentFile[count] == "x":
-                    brake = 1
-                    count = 0
-            
-        
-        diameter.append(diam)
-        
-        
-        
-            
-    if len(diameter) == len(filenames):
+    if len(diameters) == len(filenames):
         print("Array Dimension Check Success")
-        print(filenames)
-        return [filenames,diameter]
+        #print(filenames)
+        return [filenames,diameters,pitches]
     else:
         print("something broke")
         return None

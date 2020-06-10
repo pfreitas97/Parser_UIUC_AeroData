@@ -7,7 +7,6 @@ Created on Sun Feb 23 16:54:19 2020
 """
 
 
-# Since we're all reasonable human beings all units are in SI or SI derived terms
 
 import pandas as pd
 
@@ -49,7 +48,7 @@ filenames = lists[0]
 
 Diams = lists[1]
 
-
+Pitches = lists[2]
 
 
 # for i in range(0,len(temp[0])):
@@ -71,21 +70,21 @@ Diams = lists[1]
 #prop = pd.read_csv("/Users/pedroaugustofreitasdearaujo/PycharmProjects/aae451/MEINER_451/" + filenames[0] ,delim_whitespace=True)
 
 
-D = 7.4 * inch__Meter # diam in meters
+# D = 7.4 * inch__Meter # diam in meters
 
 
 
 
-J_from_n = lambda n : Velocity / (n * D)
+# J_from_n = lambda n : Velocity / (n * D)
 
 
-poly_coeff = np.polyfit(prop['J'],prop['CT'],2)
+# poly_coeff = np.polyfit(prop['J'],prop['CT'],2)
 
-a0 = poly_coeff[0]
+# a0 = poly_coeff[0]
 
-a1 = poly_coeff[1]
+# a1 = poly_coeff[1]
 
-a2 = poly_coeff[2]
+# a2 = poly_coeff[2]
 
 # J = V/(n D) V : freestream u,  n : rev / s, D : diam prop
 
@@ -102,62 +101,62 @@ a2 = poly_coeff[2]
 # current propeller is valid solution if: n > 0 & \in Reals (Im = 0)
 
 
-A = a2 * (D ** 4)
+# A = a2 * (D ** 4)
 
-B = a1 * (Velocity) * (D ** 3)
+# B = a1 * (Velocity) * (D ** 3)
 
-C = (a0 * (Velocity ** 2) * (D ** 2) )  - 0.5 * (Velocity**2) * S_ref * CD_aircraft
+# C = (a0 * (Velocity ** 2) * (D ** 2) )  - 0.5 * (Velocity**2) * S_ref * CD_aircraft
 
 
-if  (B ** 2) < (4*A*C):
+# if  (B ** 2) < (4*A*C):
     
-    #break Solution will NOT exist
+#     #break Solution will NOT exist
     
-    #TODO WHEN ACTUAL LOOP
+#     #TODO WHEN ACTUAL LOOP
     
-    print("fail")
+#     print("fail")
     
-else:
-    n_candidates = computeQuadratic_Sol(A,B,C) # computes the two roots for n if a real solution exists
-    print(n_candidates)
-    
-    
-    
-
-    
-if n_candidates[0] <= 0 and n_candidates[1] <= 0:
-    # also break, solutions make no physical sense, should be impossible to happen but oh well
-    
-    print('fail pt2')
-elif n_candidates[0] < 0 and n_candidates[1] > 0:
-    
-    #only second solutiin valid, return that one
-    
-    n_star = n_candidates[1]
-    
-    
-elif n_candidates[0] > 0 and n_candidates[1] < 0:
+# else:
+#     n_candidates = computeQuadratic_Sol(A,B,C) # computes the two roots for n if a real solution exists
+#     print(n_candidates)
     
     
     
-    #only first solutiin valid, return that one
-    
-    n_star = n_candidates[0]
-
-else:
-    # Two valid solutions, must now interpolate CP and check which one is smaller
-    
-    # will utilize an order FOUR polyfit on account of the two points of inflection observed in the actual data
-    
-    CP_poly_coeff = np.polyfit(prop['J'],prop['CP'],4)
-
-    CP_poly = np.poly1d(CP_poly_coeff)
-    
-    #    n_star = n_candidates[0] if CP_poly(n_candidates[0]) * (n_candidates[0]**3) <  see notes
 
     
+# if n_candidates[0] <= 0 and n_candidates[1] <= 0:
+#     # also break, solutions make no physical sense, should be impossible to happen but oh well
     
-    n_star = n_candidates[0] if CP_poly(J_from_n(n_candidates[0])) < CP_poly(J_from_n(n_candidates[1])) else n_candidates[1]
+#     print('fail pt2')
+# elif n_candidates[0] < 0 and n_candidates[1] > 0:
+    
+#     #only second solutiin valid, return that one
+    
+#     n_star = n_candidates[1]
+    
+    
+# elif n_candidates[0] > 0 and n_candidates[1] < 0:
+    
+    
+    
+#     #only first solutiin valid, return that one
+    
+#     n_star = n_candidates[0]
+
+# else:
+#     # Two valid solutions, must now interpolate CP and check which one is smaller
+    
+#     # will utilize an order FOUR polyfit on account of the two points of inflection observed in the actual data
+    
+#     CP_poly_coeff = np.polyfit(prop['J'],prop['CP'],4)
+
+#     CP_poly = np.poly1d(CP_poly_coeff)
+    
+#     #    n_star = n_candidates[0] if CP_poly(n_candidates[0]) * (n_candidates[0]**3) <  see notes
+
+    
+    
+#     n_star = n_candidates[0] if CP_poly(J_from_n(n_candidates[0])) < CP_poly(J_from_n(n_candidates[1])) else n_candidates[1]
 
 
 
@@ -165,20 +164,20 @@ else:
 
 ## Actual final answer you'd get for this airfoil after running program would then need to select minimum from list of valid powers
 
-CP_poly_coeff = np.polyfit(prop['J'],prop['CP'],4)
+# CP_poly_coeff = np.polyfit(prop['J'],prop['CP'],4)
 
-CP_poly = np.poly1d(CP_poly_coeff)
+# CP_poly = np.poly1d(CP_poly_coeff)
 
-Power_star = Rho * (D **5) * (n_star ** 3) * CP_poly(J_from_n(n_star)) #Power in Watts
-
-
+# Power_star = Rho * (D **5) * (n_star ** 3) * CP_poly(J_from_n(n_star)) #Power in Watts
 
 
-# CTpoly = np.poly1d(poly_coeff)
 
-# print(CTpoly(0))
 
-# print(CTpoly(1))
+# # CTpoly = np.poly1d(poly_coeff)
+
+# # print(CTpoly(0))
+
+# # print(CTpoly(1))
 
 # print(CTpoly.coeffs)
 
