@@ -20,8 +20,6 @@ import os
 
 
 
-
-
 ## Assumed known values that become parameters in this analysis
 
 Velocity = 10;  #m/s
@@ -42,7 +40,7 @@ computeThurst = lambda rho, CT, n, D : CT * rho * (n**2) * (D**4)
 computeQuadratic_Sol = lambda a,b,c : np.array([  (-1*b + np.sqrt((b**2) - 4*a*c ))/(2*a), (-1*b - np.sqrt((b**2) - 4*a*c ))/(2*a)])
 
 
-lists = Propeller_File_Selector(os.getcwd()  + "/Propeller_Data_V1", "geom")
+lists = Propeller_File_Selector(os.getcwd()  + "/Propeller_Data_V1","geom")
 
     
 
@@ -54,12 +52,14 @@ Pitches = lists[2]
 
 paths = lists[3]
 
+#TESTER = paths
+
 
 text = paths[0]
 
 geomTest = pd.read_csv(paths[0],delim_whitespace=True)
 
-plt.plot(geomTest['r/R'],geomTest['c/R'] )
+#plt.plot(geomTest['r/R'],geomTest['c/R'] )
 
 
 

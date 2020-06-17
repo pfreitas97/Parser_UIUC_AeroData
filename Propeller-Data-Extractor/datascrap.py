@@ -10,6 +10,10 @@ import os
 
 #location assumes separate folder for prop
 
+
+
+
+
 def findCharOccurrences(string, char):
     return [i for i, letter in enumerate(string) if letter == char]
 
@@ -17,6 +21,8 @@ def findCharOccurrences(string, char):
 # Will return file name pitch and diameter 
 
 def Propeller_File_Selector(path, contains="all"):
+    
+    EXCEPTIONS = []
         
     files = []
     filenames = []
@@ -58,6 +64,9 @@ def Propeller_File_Selector(path, contains="all"):
         filenames.append(currentFile)
         
        # print(currentFile +  "still temp2")
+       
+       
+       
         
     # Lets extract the diamters, and pitches and name of the prop in each file
          
@@ -65,6 +74,12 @@ def Propeller_File_Selector(path, contains="all"):
     for i in range(len(filenames)):
         
         currentFile = filenames[i] #propeller file
+        
+        
+        # Unfortunately the dataset is not standardized and a small number of
+        # propellers need to be treated separately
+        
+        
                 
              
         # Within the propeller data set the names and dimensions are encoded
@@ -83,8 +98,8 @@ def Propeller_File_Selector(path, contains="all"):
         x = findCharOccurrences(currentFile,"x")
         
         
-        
-        
+        #print(currentFile)
+        #print(breaks)
         
         # select only the x between the desired breaks
         
@@ -96,7 +111,10 @@ def Propeller_File_Selector(path, contains="all"):
         
         pitches.append(currentFile[x[0] + 1: breaks[1] ])
         
-        filePaths.append(path + "/" + currentFile)
+        
+        filePaths.append(os.path.join(path,currentFile))
+        
+        #filePaths.append(path + "/" + currentFile)
         
         
         #In case only a subset of files is desired.
