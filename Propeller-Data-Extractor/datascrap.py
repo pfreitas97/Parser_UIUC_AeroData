@@ -13,17 +13,37 @@ import os
 
 
 
+'''NO CHILD LEFT BEHIND SUPER STARS
+    Special case handling to address the lack of a std data format'''
+    
+def handleLackOfGeometricData(string):    
+    
+    print("FUCKKKKKKK %s" % string)
+    
 
+def metricDetection(string):
+    
+    print("at least I got triggered")
+    
+
+''' END OF NO CHILD LEFT BEHIND '''
+
+
+    
 def findCharOccurrences(string, char):
     return [i for i, letter in enumerate(string) if letter == char]
 
 
+
+
 # Will return file name pitch and diameter 
 
+
+
+'''TODOOOOOO HANDLE METRIC ERROR AND STOP EXCLUDING POORLY LABELED INPUT '''
+
 def Propeller_File_Selector(path, contains="all"):
-    
-    EXCEPTIONS = []
-        
+            
     files = []
     filenames = []
     
@@ -31,9 +51,7 @@ def Propeller_File_Selector(path, contains="all"):
     diameters = [] # in original units for now
     
     pitches = [] # in og units
-    
-    filePaths = []
-        
+            
     
     # r=root, d=directories, f = files
     
@@ -44,37 +62,25 @@ def Propeller_File_Selector(path, contains="all"):
     
     cut = len(path) + 1
     
-    # Lets remove the directory from the string and put
-    # the filenames in a new list
-    
-    
-    for i in range(len(files)):
-        
-        
-       # This block prevents the inclusion of every file when required 
-        if contains != "all":
-            if files[i].find(contains) == -1:
-                continue
-        
-            
-            
-        
-        currentPath = files[i]
-        currentFile = currentPath[cut:]
-        filenames.append(currentFile)
-        
-       # print(currentFile +  "still temp2")
-       
-       
+    # Lets remove the directory/root from each string and put
+    # the filenames in a new list    
        
         
     # Lets extract the diamters, and pitches and name of the prop in each file
          
         
-    for i in range(len(filenames)):
+    for file in files:
         
-        currentFile = filenames[i] #propeller file
         
+        
+        currentFile = file[cut:]
+        
+        if contains != "all":
+            if currentFile.find(contains) == -1:
+                continue
+        
+
+
         
         # Unfortunately the dataset is not standardized and a small number of
         # propellers need to be treated separately
@@ -88,6 +94,16 @@ def Propeller_File_Selector(path, contains="all"):
         breaks = findCharOccurrences(currentFile, "_")
         
         
+        
+        '''TODOOO SUBISTITUE MORE APPROPRIATELY'''
+        # This is meant to account for the fact the second volume 
+        # does not maintain a consistent naming convention
+        
+        if not breaks or len(breaks) == 1:
+            handleLackOfGeometricData(currentFile)
+            continue
+        
+        
         # Within each filename the dimensions are in the following format:
         # _Propeller-Diameter[Inches]xPropeller-Pitch[Inches]_
         # Where the first and second "_" are ALWAYS the 
@@ -98,13 +114,31 @@ def Propeller_File_Selector(path, contains="all"):
         x = findCharOccurrences(currentFile,"x")
         
         
-        #print(currentFile)
-        #print(breaks)
+        
+        '''TODOOO SUBISTITUE MORE APPROPRIATELY'''
+        # This is meant to account for the fact the second volume 
+        # does not maintain a consistent naming convention
+        if not x:
+            handleLackOfGeometricData(currentFile)
+            continue
+
+
+        
         
         # select only the x between the desired breaks
         
+        
+        ''' TODO refactor for user friendliness '''
+        
+        
         x = [X for X in x if X > breaks[0] & X < breaks[1]]
+        
+        
+        
+        ###
                 
+        
+        filenames.append(currentFile)
         
         diameters.append(currentFile[breaks[0]+ 1: x[0]])
         
@@ -112,7 +146,6 @@ def Propeller_File_Selector(path, contains="all"):
         pitches.append(currentFile[x[0] + 1: breaks[1] ])
         
         
-        filePaths.append(os.path.join(path,currentFile))
         
         #filePaths.append(path + "/" + currentFile)
         
@@ -121,14 +154,17 @@ def Propeller_File_Selector(path, contains="all"):
         
         
         
+    # THIS ENTIRE BLOCK NEEDS TO BE REFACTORED    
         
-        
-            
+        ###############    
     if len(diameters) == len(filenames):
         print("Array Dimension Check Success")
         #print(filenames)
-        return [filenames,diameters,pitches,filePaths]
+        return [filenames,diameters,pitches,files]
     else:
         print("something broke")
-        return None
+        return [filenames,diameters,pitches,files]
 
+
+
+##############

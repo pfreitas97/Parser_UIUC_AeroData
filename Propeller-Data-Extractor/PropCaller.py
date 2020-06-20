@@ -40,9 +40,10 @@ computeThurst = lambda rho, CT, n, D : CT * rho * (n**2) * (D**4)
 computeQuadratic_Sol = lambda a,b,c : np.array([  (-1*b + np.sqrt((b**2) - 4*a*c ))/(2*a), (-1*b - np.sqrt((b**2) - 4*a*c ))/(2*a)])
 
 
-lists = Propeller_File_Selector(os.getcwd()  + "/Propeller_Data_V1","geom")
+lists = Propeller_File_Selector(os.getcwd()  + "/Propeller_Data_V2","geom")
 
     
+
 
 filenames = lists[0]
 
