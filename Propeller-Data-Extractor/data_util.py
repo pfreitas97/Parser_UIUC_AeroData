@@ -18,7 +18,7 @@ import os
     
 def handleLackOfGeometricData(string):    
     
-    print("FUCKKKKKKK %s" % string)
+    print("%s" % string)
     
 
 def metricDetection(string):
@@ -40,9 +40,20 @@ def findCharOccurrences(string, char):
 
 
 
-'''TODOOOOOO HANDLE METRIC ERROR AND STOP EXCLUDING POORLY LABELED INPUT '''
+'''TODOOOOOO HANDLE METRIC ERROR, AND STOP EXCLUDING POORLY LABELED INPUT '''
 
-def Propeller_File_Selector(path, contains="all"):
+'''Missing: Flag saying whether results in metric or imperial are desired
+            Way to handle the fact metric data points were included unconverted '''
+
+def Prop_File_Filter(path, contains="all"):
+    '''This function accesses a path with the desired propeller data and returns
+    only the elements requested with the information embedded in the filename.
+    
+    KeyWork Arguments:
+        Path - Absolute path to desired Propeller data folder
+        Contains - An optional substring to filter content, useful for:  
+            extracting the geometric files for every Propeller, for example.
+        ''' 
             
     files = []
     filenames = []
@@ -51,6 +62,9 @@ def Propeller_File_Selector(path, contains="all"):
     diameters = [] # in original units for now
     
     pitches = [] # in og units
+    
+    
+    ''' NOTEEEEE CURRENTLY ADDING PATHS OF MARGINALIZED FILES TOO ''' 
             
     
     # r=root, d=directories, f = files
@@ -79,15 +93,9 @@ def Propeller_File_Selector(path, contains="all"):
             if currentFile.find(contains) == -1:
                 continue
         
+        
 
-
         
-        # Unfortunately the dataset is not standardized and a small number of
-        # propellers need to be treated separately
-        
-        
-                
-             
         # Within the propeller data set the names and dimensions are encoded
         # in the file name separated by "_" characters
         
@@ -96,8 +104,11 @@ def Propeller_File_Selector(path, contains="all"):
         
         
         '''TODOOO SUBISTITUE MORE APPROPRIATELY'''
-        # This is meant to account for the fact the second volume 
-        # does not maintain a consistent naming convention
+        
+        # Unfortunately the dataset naming convention is not standardized 
+        # and thus a small number of propellers need to be treated separately
+        
+        # This particular block is meant to handle this issue.
         
         if not breaks or len(breaks) == 1:
             handleLackOfGeometricData(currentFile)
@@ -111,32 +122,25 @@ def Propeller_File_Selector(path, contains="all"):
         
         # finding the x split within this section is then given by:
         
-        x = findCharOccurrences(currentFile,"x")
+        position_x = findCharOccurrences(currentFile,"x")
         
         
-        
-        '''TODOOO SUBISTITUE MORE APPROPRIATELY'''
-        # This is meant to account for the fact the second volume 
-        # does not maintain a consistent naming convention
-        if not x:
+        if not position_x:
             handleLackOfGeometricData(currentFile)
             continue
 
 
-        
-        
+        # End of execption handling block
+
+
         # select only the x between the desired breaks
         
-        
-        ''' TODO refactor for user friendliness '''
-        
-        
-        x = [X for X in x if X > breaks[0] & X < breaks[1]]
+        x = [X for X in position_x if X > breaks[0] & X < breaks[1]]
         
         
-        
-        ###
-                
+        ''' TODOOO ADD METRIC HANDLING HERE '''     
+
+                        
         
         filenames.append(currentFile)
         
@@ -144,14 +148,6 @@ def Propeller_File_Selector(path, contains="all"):
         
         
         pitches.append(currentFile[x[0] + 1: breaks[1] ])
-        
-        
-        
-        #filePaths.append(path + "/" + currentFile)
-        
-        
-        #In case only a subset of files is desired.
-        
         
         
     # THIS ENTIRE BLOCK NEEDS TO BE REFACTORED    
@@ -162,8 +158,15 @@ def Propeller_File_Selector(path, contains="all"):
         #print(filenames)
         return [filenames,diameters,pitches,files]
     else:
-        print("something broke")
+        print("Error: data dimensions are incorrect")
         return [filenames,diameters,pitches,files]
+
+
+def find_Metric_Props(html_file):
+    '''Utilizes the HTML file included with the database to determine which files must be converted from metric
+        
+    Returns a list with the name of every metric propelller'''
+    
 
 
 
