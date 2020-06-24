@@ -10,8 +10,6 @@ Created on Sun Feb 23 16:54:19 2020
 
 import pandas as pd
 
-import matplotlib.pyplot as plt
-
 import numpy as np
 
 from data_util import Prop_File_Filter
@@ -40,7 +38,7 @@ computeThurst = lambda rho, CT, n, D : CT * rho * (n**2) * (D**4)
 computeQuadratic_Sol = lambda a,b,c : np.array([  (-1*b + np.sqrt((b**2) - 4*a*c ))/(2*a), (-1*b - np.sqrt((b**2) - 4*a*c ))/(2*a)])
 
 
-lists = Prop_File_Filter(os.getcwd()  + "/Propeller_Data_V2","geom",metric=True)
+lists = Prop_File_Filter(os.getcwd()  + "/Propeller_Data_V2",contains="geom",metric=True)
 
     
 
