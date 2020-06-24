@@ -40,7 +40,7 @@ computeThurst = lambda rho, CT, n, D : CT * rho * (n**2) * (D**4)
 computeQuadratic_Sol = lambda a,b,c : np.array([  (-1*b + np.sqrt((b**2) - 4*a*c ))/(2*a), (-1*b - np.sqrt((b**2) - 4*a*c ))/(2*a)])
 
 
-lists = Prop_File_Filter(os.getcwd()  + "/Propeller_Data_V2")
+lists = Prop_File_Filter(os.getcwd()  + "/Propeller_Data_V2","geom",metric=True)
 
     
 

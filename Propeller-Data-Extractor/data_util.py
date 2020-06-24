@@ -18,13 +18,16 @@ import os
     
 def handleLackOfGeometricData(string):    
     
-    print("%s" % string)
+    print("The propeller named: %s was not included in list" % string)
     
 
-def metricDetection(string):
+def find_Metric_Props():
+    '''Returns the list of metric propellers, this was hardcoded since there were only 5 of them across 4 brands'''
     
-    print("at least I got triggered")
+    METRIC_PROPELLERS = ("ef","kpf","pl","vp")
     
+    
+    return METRIC_PROPELLERS
 
 ''' END OF NO CHILD LEFT BEHIND '''
 
@@ -40,21 +43,28 @@ def findCharOccurrences(string, char):
 
 
 
-'''TODOOOOOO HANDLE METRIC ERROR, AND STOP EXCLUDING POORLY LABELED INPUT '''
 
-'''Missing: Flag saying whether results in metric or imperial are desired
-            Way to handle the fact metric data points were included unconverted '''
+'''Missing: Handling of additional unorthodox propeller names'''
 
-def Prop_File_Filter(path, contains="all"):
+''' NOTEEEEE CURRENTLY ADDING PATHS OF MARGINALIZED FILES TOO '''
+
+
+
+
+def Prop_File_Filter(path, contains="all", metric=False):
     '''This function accesses a path with the desired propeller data and returns
     only the elements requested with the information embedded in the filename.
     
     KeyWork Arguments:
-        Path - Absolute path to desired Propeller data folder
-        Contains - An optional substring to filter content, useful for:  
+        path - Absolute path to desired Propeller data folder
+        contains - An optional substring to filter content, useful for:  
             extracting the geometric files for every Propeller, for example.
-        ''' 
-            
+        metric - Boolean return diameter and pitch in meters when set to true, 
+                    otherwise it will return those values in inches
+        '''
+    
+    assert(os.path.exists(path))
+        
     files = []
     filenames = []
     
@@ -62,10 +72,8 @@ def Prop_File_Filter(path, contains="all"):
     diameters = [] # in original units for now
     
     pitches = [] # in og units
-    
-    
-    ''' NOTEEEEE CURRENTLY ADDING PATHS OF MARGINALIZED FILES TOO ''' 
-            
+        
+    METRIC_PROPELLERS = find_Metric_Props()
     
     # r=root, d=directories, f = files
     
@@ -85,26 +93,18 @@ def Prop_File_Filter(path, contains="all"):
         
     for file in files:
         
-        
-        
         currentFile = file[cut:]
         
         if contains != "all":
             if currentFile.find(contains) == -1:
                 continue
         
-        
-
-        
         # Within the propeller data set the names and dimensions are encoded
         # in the file name separated by "_" characters
         
         breaks = findCharOccurrences(currentFile, "_")
         
-        
-        
-        '''TODOOO SUBISTITUE MORE APPROPRIATELY'''
-        
+                
         # Unfortunately the dataset naming convention is not standardized 
         # and thus a small number of propellers need to be treated separately
         
@@ -113,7 +113,6 @@ def Prop_File_Filter(path, contains="all"):
         if not breaks or len(breaks) == 1:
             handleLackOfGeometricData(currentFile)
             continue
-        
         
         # Within each filename the dimensions are in the following format:
         # _Propeller-Diameter[Inches]xPropeller-Pitch[Inches]_
@@ -125,7 +124,7 @@ def Prop_File_Filter(path, contains="all"):
         position_x = findCharOccurrences(currentFile,"x")
         
         
-        if not position_x:
+        if not position_x or len(position_x) == 1:
             handleLackOfGeometricData(currentFile)
             continue
 
@@ -138,16 +137,45 @@ def Prop_File_Filter(path, contains="all"):
         x = [X for X in position_x if X > breaks[0] & X < breaks[1]]
         
         
-        ''' TODOOO ADD METRIC HANDLING HERE '''     
+        
+        diameterValue = float(currentFile[breaks[0]+ 1: x[0]])
+              
+        pitchValue = float(currentFile[x[0] + 1: breaks[1]])
+        
+        # Converting to the appropriate units
+        INCHES_PER_MILIMETER = 0.0393701
+        
+        METERS_PER_INCH = 0.0254
+        
+        if not metric:
+            if any(prop in currentFile for prop in METRIC_PROPELLERS):
+                diameterValue = round(diameterValue * INCHES_PER_MILIMETER,2)
+                pitchValue = round(pitchValue * INCHES_PER_MILIMETER,2)
+                print(diameterValue)
+        
+        
+        if metric:
+            if any(prop in currentFile for prop in METRIC_PROPELLERS):
+                diameterValue = diameterValue / 1000
+                pitchValue = pitchValue / 1000
+            
+            else:
+                diameterValue = round(diameterValue * METERS_PER_INCH,2)
+                pitchValue = round(pitchValue * METERS_PER_INCH,2)                
+                
+        
+        
+        filenames.append(currentFile) 
+        
+        diameters.append(diameterValue)
+        
+        pitches.append(pitchValue)
 
-                        
+        #diameters.append(currentFile[breaks[0]+ 1: x[0]])
         
-        filenames.append(currentFile)
-        
-        diameters.append(currentFile[breaks[0]+ 1: x[0]])
+        #pitches.append(currentFile[x[0] + 1: breaks[1] ])
         
         
-        pitches.append(currentFile[x[0] + 1: breaks[1] ])
         
         
     # THIS ENTIRE BLOCK NEEDS TO BE REFACTORED    
@@ -162,10 +190,7 @@ def Prop_File_Filter(path, contains="all"):
         return [filenames,diameters,pitches,files]
 
 
-def find_Metric_Props(html_file):
-    '''Utilizes the HTML file included with the database to determine which files must be converted from metric
-        
-    Returns a list with the name of every metric propelller'''
+
     
 
 
