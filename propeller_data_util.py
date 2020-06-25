@@ -21,7 +21,7 @@ def _handleLackOfGeometricData(string):
     
 
 def _find_Metric_Props():
-    '''Returns the list of metric propellers, this was hardcoded since there were only 5 of them across 4 brands'''
+    '''Return list of metric propellers, this was hardcoded since there were only 5 of them across 4 brands'''
     
     METRIC_PROPELLERS = ("ef","kpf","pl","vp")
     
@@ -30,6 +30,7 @@ def _find_Metric_Props():
 
     
 def _findCharOccurrences(string, char):
+    ''' Return iterable of every occurence of char character '''
     return [i for i, letter in enumerate(string) if letter == char]
 
 
@@ -41,8 +42,7 @@ def _findCharOccurrences(string, char):
 
 ''' Also change for more silent result '''
 
-def Prop_File_Filter(path, contains="all", metric=False):
-    
+def Prop_File_Filter(path, contains="all", metric=False): 
     '''This function accesses a path with the desired propeller data and returns
     only the elements requested with the information embedded in the filename.
     
@@ -96,7 +96,22 @@ def Prop_File_Filter(path, contains="all", metric=False):
         
         breaks = _findCharOccurrences(currentFile, "_")
         
+       
+        ''' hHERE BEEEE CHANGES '''
+        # Within each filename the dimensions are in the following format:
+        # _Propeller-Diameter[Inches]xPropeller-Pitch[Inches]_
+        # Where the first and second "_" are ALWAYS the 
+        #       first and second in the file
         
+        # finding the x split within this section is then given by:
+        
+        position_x = _findCharOccurrences(currentFile,"x")
+        
+
+        # NEW AND IMPROVED EXCEPTION HANDLING: TBD
+        # if len(breaks) < 2 or len(position_x) < 2:
+        #     print(currentFile)   
+            
         
                 
         # Unfortunately the dataset naming convention is not standardized 
@@ -107,23 +122,25 @@ def Prop_File_Filter(path, contains="all", metric=False):
             _handleLackOfGeometricData(currentFile)
             continue
         
-        # Within each filename the dimensions are in the following format:
-        # _Propeller-Diameter[Inches]xPropeller-Pitch[Inches]_
-        # Where the first and second "_" are ALWAYS the 
-        #       first and second in the file
+        # # Within each filename the dimensions are in the following format:
+        # # _Propeller-Diameter[Inches]xPropeller-Pitch[Inches]_
+        # # Where the first and second "_" are ALWAYS the 
+        # #       first and second in the file
         
-        # finding the x split within this section is then given by:
+        # # finding the x split within this section is then given by:
         
-        position_x = _findCharOccurrences(currentFile,"x")
+        # position_x = _findCharOccurrences(currentFile,"x")
         
         
         if not position_x or len(position_x) == 1:
             _handleLackOfGeometricData(currentFile)
             continue
-
+        
+        
+        
+        ''' END WORK IN PROGRESS '''
 
         # End of execption handling block
-        
         
         
         
