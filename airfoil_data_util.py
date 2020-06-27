@@ -8,32 +8,42 @@ Airfoil_data_util: Filter
 """
 
 import os
+import shutil
 
 
-testPATH = os.path.join(os.path.join(os.getcwd(),"Airfoil_Coordinates"),"n0011sc.dat")
 
 # ''.join([char for char in first_line if char not in SPECIAL_CHAR]).replace(" ","_") -- removes everything but spaces 
 #     which it replaces with _
-
-
-
-def _get_new_filename(absPath):
-    SPECIAL_CHAR = (",","/",".","\\","%","&"," ")
+def _get_new_filename(absPath,filename):
+    SPECIAL_CHAR = (",","/",".","\\","%"," ","AIRFOILS","AIRFOIL","__")
     
-    with open(absPath) as file:
+    newFilename = filename.replace(".dat","").upper()
         
-        newFilename = file.readline().strip()
+    with open(absPath,"r", encoding="utf-8") as file:
         
+        try:
+            newFilename = file.readline().strip()
+            
+        except UnicodeDecodeError:
+            idxDot = filename.find(".")
+            
+            newFilename = filename[:idxDot].upper()
+            
+            print("Warning the following airfoil file might be in a non-standard encoding: %s \n" % filename)
+            
+            
+                    
         for char in SPECIAL_CHAR:
+            
             newFilename = newFilename.replace(char,"_")
         
-        print(newFilename)
-        return newFilename
-    return
+        return newFilename + ".dat"
+    
+    
+    return newFilename + ".dat"
 
 
- 
-def rename_airfoils(path,new_directory=""):
+def rename_airfoils(path,dest_dir="RENAMED_FOLDER"):
     ''' Utility file to change the filenames of all airfoils from the original to the first line within each file. 
         E.g. n0012 -> NACA_0012
     Params:
@@ -42,28 +52,65 @@ def rename_airfoils(path,new_directory=""):
     '''
     assert(os.path.exists(path))
     
+    oldFile = []
+    
+    newFile = []
+    
+    assigned_names = []
+    
     targetPath = path
         
-    if len(new_directory) > 0:
-        os.mkdir(new_directory)
-        targetPath = os.path.join(os.getcwd(),new_directory)
+    if len(dest_dir) > 0:
+        os.mkdir(dest_dir)
+        targetPath = os.path.join(os.getcwd(),dest_dir)
 
-    print(path)
     for r, d, f in os.walk(path):
         for file in f:
             if '.dat' in file:
+                                
                 currentAbsPath = os.path.join(r,file)
-                newFilename = _get_new_filename(currentAbsPath)
-                os.rename(currentAbsPath,os.path.join(targetPath,newFilename))
                 
-    print(newFilename)
-    
-    
-    
-    
-    
-    
+                oldFile.append(currentAbsPath)
+
+                newFilename = _get_new_filename(currentAbsPath,file)
+                
+                
+                # Checking for duplicate names:
+                if newFilename in assigned_names:
+                    print("Note original name was kept for: %s to prevent a file from being overwritten \n" % file)
+                    newFilename = file
+                    
+                    
+                
+                assigned_names.append(newFilename)
+                
+                
+                if len(dest_dir) > 0: # If making a new directory, and copying all files there prior to renaming
+                    
+                    shutil.copy(currentAbsPath,targetPath)
+                    
+                    dest_dir = os.path.join(targetPath,file)
+                    
+                    new_Name_dest_dir = os.path.join(targetPath,newFilename)
+                    
+                    os.rename(dest_dir,new_Name_dest_dir)
+                    
+                    newFile.append(new_Name_dest_dir)
+                    
+                    
+                else: # if overwriting old files
+                    
+                    new_Name_dest_dir = os.path.join(r,newFilename)
+                    
+                    os.rename(currentAbsPath,new_Name_dest_dir)
+                    
+                    newFile.append(new_Name_dest_dir)
+                    
+                    pass
+    return [oldFile,newFile]
+ 
 
 
+lists = rename_airfoils(os.path.join(os.getcwd(),"Airfoil_Coordinates"))
     
-rename_airfoils(os.getcwd())
+#rename_airfoils(os.path.join(os.getcwd(),"Airfoil_Coordinates"), dest_dir="NEWFOIL")
