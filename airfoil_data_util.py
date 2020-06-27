@@ -52,10 +52,7 @@ def rename_airfoils(path,dest_dir="RENAMED_FOLDER"):
     '''
     assert(os.path.exists(path))
     
-    oldFile = []
-    
-    newFile = []
-    
+
     assigned_names = []
     
     targetPath = path
@@ -70,8 +67,6 @@ def rename_airfoils(path,dest_dir="RENAMED_FOLDER"):
                                 
                 currentAbsPath = os.path.join(r,file)
                 
-                oldFile.append(currentAbsPath)
-
                 newFilename = _get_new_filename(currentAbsPath,file)
                 
                 
@@ -79,8 +74,6 @@ def rename_airfoils(path,dest_dir="RENAMED_FOLDER"):
                 if newFilename in assigned_names:
                     print("Note original name was kept for: %s to prevent a file from being overwritten \n" % file)
                     newFilename = file
-                    
-                    
                 
                 assigned_names.append(newFilename)
                 
@@ -94,21 +87,15 @@ def rename_airfoils(path,dest_dir="RENAMED_FOLDER"):
                     new_Name_dest_dir = os.path.join(targetPath,newFilename)
                     
                     os.rename(dest_dir,new_Name_dest_dir)
-                    
-                    newFile.append(new_Name_dest_dir)
-                    
+                                        
                     
                 else: # if overwriting old files
                     
                     new_Name_dest_dir = os.path.join(r,newFilename)
                     
                     os.rename(currentAbsPath,new_Name_dest_dir)
-                    
-                    newFile.append(new_Name_dest_dir)
-                    
-                    pass
-    return [oldFile,newFile]
- 
+
+
 
 
 lists = rename_airfoils(os.path.join(os.getcwd(),"Airfoil_Coordinates"))
