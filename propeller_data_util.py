@@ -30,10 +30,8 @@ def _find_Metric_Props():
 
     
 def _findCharOccurrences(string, char):
-    ''' Return iterable of every occurence of char character '''
+    '''Return iterable of every occurence of char character '''
     return [i for i, letter in enumerate(string) if letter == char]
-
-
 
 
 
@@ -42,7 +40,7 @@ def _findCharOccurrences(string, char):
 
 ''' Also change for more silent result '''
 
-def Prop_File_Filter(path, contains="all", metric=False): 
+def prop_File_Filter(path, contains="all", metric=False): 
     '''This function accesses a path with the desired propeller data and returns
     only the elements requested with the information embedded in the filename.
     
@@ -198,3 +196,16 @@ def Prop_File_Filter(path, contains="all", metric=False):
         print("Error: data dimensions are incorrect")
         return [filenames,diameters,pitches,filePaths]
 ##############
+
+
+
+def isSamePropeller(filename1,filename2):
+    '''Return boolean of whether or not two filenames belong to the same propeller'''        
+    print(filename1)
+    print(filename2)
+    breaks_first = _findCharOccurrences(filename1, "_")
+    
+    breaks_second = _findCharOccurrences(filename2, "_")
+    
+    return (filename1[:breaks_first[0]] == filename2[:breaks_second[0]] and 
+            filename1[breaks_first[0]:breaks_first[1]] == filename2[breaks_second[0]:breaks_second[1]])
