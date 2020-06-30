@@ -15,11 +15,16 @@ import os
 
 '''Special case handling to address the lack of a std data format'''
     
-def _handleLackOfGeometricData(string):    
+def _handleLackOfGeometricData(string,verbose): 
+    '''Function that determines what the program should do with files that do not provide pitch information, 
+    currently I am ignoring them but this could easily be changed by altering this file and the if statement 
+    in prop_file_filter'''
     
-    print("The propeller named: %s was not included in list due to non-compliant format." % string)
+    if verbose:
+        print("The propeller named: %s was not included in list due to non-compliant format." % string)
     
-
+    
+    
 def _find_Metric_Props():
     '''Return list of metric propellers, this was hardcoded since there were only 5 of them across 4 brands'''
     
@@ -35,12 +40,10 @@ def _findCharOccurrences(string, char):
 
 
 
-'''Missing: Handling of additional unorthodox propeller names'''
 
 
-''' Also change for more silent result '''
 
-def prop_File_Filter(path, contains="all", metric=False): 
+def prop_File_Filter(path, contains="all", metric=False, verbose=False): 
     '''This function accesses a path with the desired propeller data and returns
     only the elements requested with the information embedded in the filename.
     
@@ -50,6 +53,7 @@ def prop_File_Filter(path, contains="all", metric=False):
                     extracting the geometric files for every Propeller, for example.
         metric - Boolean return diameter and pitch in meters when set to true, 
                     otherwise it will return those values in inches
+        verbose - Boolean print the propellers that were ignored if set to true.
         '''
     
     assert(os.path.exists(path))
@@ -163,9 +167,7 @@ def prop_File_Filter(path, contains="all", metric=False):
         if not metric:
             if any(prop in currentFile for prop in METRIC_PROPELLERS):
                 diameterValue = round(diameterValue * INCHES_PER_MILIMETER,3)
-                pitchValue = round(pitchValue * INCHES_PER_MILIMETER,3)
-                print(diameterValue)
-        
+                pitchValue = round(pitchValue * INCHES_PER_MILIMETER,3)        
         
         if metric:
             if any(prop in currentFile for prop in METRIC_PROPELLERS):
@@ -190,7 +192,6 @@ def prop_File_Filter(path, contains="all", metric=False):
         ###############    
     if len(diameters) == len(filenames):
         print("Array Dimension Check Success")
-        #print(filenames)
         return [filenames,diameters,pitches,filePaths]
     else:
         print("Error: data dimensions are incorrect")
@@ -198,14 +199,18 @@ def prop_File_Filter(path, contains="all", metric=False):
 ##############
 
 
-
 def isSamePropeller(filename1,filename2):
-    '''Return boolean of whether or not two filenames belong to the same propeller'''        
-    print(filename1)
-    print(filename2)
+    '''Return boolean of whether or not two filenames belong to the same propeller 
+        useful for linking geometric to static files for instance
+        '''        
+    #print(filename1)
+    #print(filename2)
     breaks_first = _findCharOccurrences(filename1, "_")
     
     breaks_second = _findCharOccurrences(filename2, "_")
+    
+    if (len(breaks_first) != len(breaks_second)):
+        return False
     
     return (filename1[:breaks_first[0]] == filename2[:breaks_second[0]] and 
             filename1[breaks_first[0]:breaks_first[1]] == filename2[breaks_second[0]:breaks_second[1]])
