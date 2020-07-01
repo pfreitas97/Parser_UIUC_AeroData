@@ -8,9 +8,9 @@ The Applied Aerodynamics Group at UIUC has created one of the largest databases 
 
 The propeller database is divided into 2 separate volumes, the primary difference between the two is the presence of both imperial and metric data, and 3D printed propellers in the second volume. In general parsing data in the first volume is much easier, since the data was entered in a more consistent format. 
 
-The majority of the code for wrangling propller data is included in the propeller_data_util file. It handles scrapping important information that is included only in the filename, such as the radius and pitch of the propeller. As well as determining the appropriate units for every file. Currently I am ignoring several propellers by design (namely the ones that were 3D printed and do not include pitch information) since I did not personally need them for my purposes, but it should be a fairly easy fix if you're interested in those as well.
+The majority of the code for wrangling propller data is included in the propeller_data_util file. It handles scrapping important information that is included only in the filename, such as the radius and pitch of the propeller. As well as determining the appropriate units for every file, and selecting only a specific subset of the data at a time. Currently I am ignoring several propellers by design (namely the ones that were 3D printed and/or do not include pitch information) since I did not personally need them for my purposes, but it should be a fairly easy fix if you're interested in those as well.
 
-In the future I intend to make the propeller data utility return a propeller tensor with the geometric data first followed by the static performance, followed by any remaining tests conducted.
+In the near future I intend to make the propeller data utility return a propeller object / list of lists / list of pandas dataframes with all of the relevant information for every propeller or a subset thereof. This is primarily intended for cases where some procedured must be performed on all propellers in dataset (e.g. making a regression model, training a neural net, etc..).
 
 
 ## Airfoil Database

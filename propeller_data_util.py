@@ -15,13 +15,19 @@ import os
 
 '''Special case handling to address the lack of a std data format'''
     
-def _handleLackOfGeometricData(string,verbose): 
+def _handleLackOfGeometricData(filename,verbose): 
     '''Function that determines what the program should do with files that do not provide pitch information, 
-    currently I am ignoring them but this could easily be changed by altering this file and the if statement 
-    in prop_file_filter'''
+    currently I am ignoring them but this could easily be changed by altering this function and the marked  
+    if statement in prop_file_filter
+    
+    Parameters:
+        filename - name of the file that does not follow the standard format
+        
+        verbose - Boolean print the propellers that were ignored if set to true.
+    '''
     
     if verbose:
-        print("The propeller named: %s was not included in list due to non-compliant format." % string)
+        print("The propeller named: %s was not included in list due to non-compliant format." % filename)
     
     
     
@@ -47,7 +53,7 @@ def prop_File_Filter(path, contains="all", metric=False, verbose=False):
     '''This function accesses a path with the desired propeller data and returns
     only the elements requested with the information embedded in the filename.
     
-    KeyWork Arguments:
+    Parameters:
         path - Absolute path to desired Propeller data folder
         contains - An optional substring to filter content, useful for:  
                     extracting the geometric files for every Propeller, for example.
@@ -99,7 +105,7 @@ def prop_File_Filter(path, contains="all", metric=False, verbose=False):
         breaks = _findCharOccurrences(currentFile, "_")
         
        
-        ''' hHERE BEEEE CHANGES '''
+        ''' Change here to include discarded files'''
         # Within each filename the dimensions are in the following format:
         # _Propeller-Diameter[Inches]xPropeller-Pitch[Inches]_
         # Where the first and second "_" are ALWAYS the 
@@ -121,26 +127,26 @@ def prop_File_Filter(path, contains="all", metric=False, verbose=False):
         # This particular block is meant to handle this issue.
         
         if not breaks or len(breaks) == 1:
-            _handleLackOfGeometricData(currentFile)
+            _handleLackOfGeometricData(currentFile,verbose)
             continue
         
-        # # Within each filename the dimensions are in the following format:
-        # # _Propeller-Diameter[Inches]xPropeller-Pitch[Inches]_
-        # # Where the first and second "_" are ALWAYS the 
-        # #       first and second in the file
         
-        # # finding the x split within this section is then given by:
         
-        # position_x = _findCharOccurrences(currentFile,"x")
+        #  Within each filename the dimensions are usually in the following format:
+            
+        #  _Propeller-Diameter[Inches]xPropeller-Pitch[Inches]_
         
+        #  Where the first and second "_" are ALWAYS the 
+        #  first and second in the file
+                
         
         if not position_x or len(position_x) == 1:
-            _handleLackOfGeometricData(currentFile)
+            _handleLackOfGeometricData(currentFile,verbose)
             continue
         
         
         
-        ''' END WORK IN PROGRESS '''
+        ''' end of block '''
 
         # End of execption handling block
         
@@ -187,16 +193,13 @@ def prop_File_Filter(path, contains="all", metric=False, verbose=False):
         
         filePaths.append(file)
 
-    # THIS ENTIRE BLOCK NEEDS TO BE REFACTORED    
         
-        ###############    
     if len(diameters) == len(filenames):
-        print("Array Dimension Check Success")
+        
         return [filenames,diameters,pitches,filePaths]
     else:
         print("Error: data dimensions are incorrect")
         return [filenames,diameters,pitches,filePaths]
-##############
 
 
 def isSamePropeller(filename1,filename2):
