@@ -9,11 +9,12 @@ import os
 import pandas as pd
 
 
-'''Special case handling to address the lack of a std data format'''
+'''Special case handling to address the lack of a std data format. If you wish to use those 
+    discardd files add your changes here'''
     
 def _handleLackOfGeometricData(filename,verbose): 
-    '''Function that determines what the program should do with files that do not provide pitch information, 
-    currently I am ignoring them but this could easily be changed by altering this function and the marked  
+    '''Function that determines what the program should do with files that do not provide pitch information. 
+    Currently I am ignoring them but this could easily be changed by altering this function and the marked  
     if statement in prop_file_filter
     
     Parameters:
@@ -25,7 +26,8 @@ def _handleLackOfGeometricData(filename,verbose):
     if verbose:
         print("The propeller named: %s was not included in list due to non-compliant format." % filename)
     
-    
+
+
     
 def _find_Metric_Props():
     '''Return list of metric propellers, this was hardcoded since there were only 5 of them across 4 brands'''
@@ -43,7 +45,11 @@ def _findCharOccurrences(string, char):
 
 def _scrapeUniqueName(filename):
     ''' Return a version of the filename which will match across different types of files, e.g. the static and geometric
-    files referring to the same dataframe will have the same filename if this function is applied. Useful for merging columns
+    files referring to the same dataframe will have the same filename if this function is applied. 
+    
+    Currently this function does not differentiate between different specs of the same propeller, 
+    e.g. a propeller from a given vendor X, with diameter Y, and pitch Z will yield the same name, 
+    regardless of whether there are two propellers from vendor X with the same diameter and pitch.
     
     filename: name of file as seen in folder. e.g. "apcff_9x4_geom.txt"
     '''
@@ -63,7 +69,7 @@ def prop_File_Filter(path, contains="all", metric=False, verbose=False):
     Parameters:
         path - Absolute path to desired Propeller data folder
         contains - An optional substring to filter content, useful for:  
-                    extracting the geometric files for every Propeller, for example.
+                    selecting only the geometric files for every Propeller, for example.
         metric - Boolean return diameter and pitch in meters when set to true, 
                     otherwise it will return those values in inches
         verbose - Boolean print the propellers that were ignored if set to true.
@@ -91,12 +97,6 @@ def prop_File_Filter(path, contains="all", metric=False, verbose=False):
     
     cut = len(path) + 1
     
-    # Lets remove the directory/root from each string and put
-    # the Prop_Name in a new list    
-       
-        
-    # Lets extract the diamters, and pitches and name of the prop in each file
-         
         
     for file in files:
         
@@ -107,21 +107,25 @@ def prop_File_Filter(path, contains="all", metric=False, verbose=False):
                 continue
         
         # Within the propeller data set the names and dimensions are encoded
-        # in the file name separated by "_" characters
+        # in the filename separated by "_" characters.
+        
+        #  The dimensions are in the following format:
+        # _Propeller-Diameter[Inches]xPropeller-Pitch[Inches]_
+        # Where the first and second "_" are ALWAYS the 
+        #       first and second in the file
+        # Note: A small number of propellers actually has this data in terms of milimeters
         
         breaks = _findCharOccurrences(currentFile, "_")
         
        
         ''' Change here to include discarded propeller files'''
         
-        # Within each filename the dimensions are in the following format:
-        # _Propeller-Diameter[Inches]xPropeller-Pitch[Inches]_
-        # Where the first and second "_" are ALWAYS the 
-        #       first and second in the file
+        # The dataset naming convention is not standardized across versions
+        # and thus a small number of propellers need to be treated separately
+        # This particular block is meant to handle this issue.
         
         
-        
-        # finding the x split within this section is then given by:
+        # the 'x' used to split diameter and pitch information:
         
         position_x = _findCharOccurrences(currentFile,"x")
         
@@ -131,17 +135,7 @@ def prop_File_Filter(path, contains="all", metric=False, verbose=False):
             continue
         
                 
-        # Unfortunately the dataset naming convention is not standardized 
-        # and thus a small number of propellers need to be treated separately
-        # This particular block is meant to handle this issue.
-        
-        
-        
-        
-        ''' end of block '''
-
-        # End of execption handling block
-        
+        ''' end exception handling block '''
         
         
         # select only the 'x' between the desired breaks
@@ -178,10 +172,8 @@ def prop_File_Filter(path, contains="all", metric=False, verbose=False):
         
 
         # For convinience, returning only unique name
-        
-        currentFile = _scrapeUniqueName(currentFile)
-        
-        Prop_Name.append(currentFile) 
+                
+        Prop_Name.append( _scrapeUniqueName(currentFile)) 
         
         diameters.append(diameterValue)
         
@@ -194,15 +186,15 @@ def prop_File_Filter(path, contains="all", metric=False, verbose=False):
         
         return [Prop_Name,diameters,pitches,filePaths]
     else:
-        print("Error: data dimensions are incorrect, result might be incorrect. Please check the path provided \
+        print("Error: data dimensions are incorrect, result may be incorrect. Please check the path provided \
               to deetermine if it contains files from outside the UIUC database")
         return [Prop_Name,diameters,pitches,filePaths]
 
 
 
-def mergePropellerFiles(path,target_1,target_2,metric=False,dropDuplicates=True,sort=True):
-    '''Return single pandas dataframe where each file path column contains the path to the file with "target" substring.
-    Merges files based on Propeller name, drops duplicate names.
+def merge_propeller_files(path,target_1,target_2,metric=False,dropDuplicates=True,sort=True):
+    '''Return single pandas dataframe where each file path column contains the path to the file with the target substring.
+    Merges files based on Propeller name, drops duplicate names by default.
     
     Parameters
     path: Absolute path to folder with propeller text files
@@ -249,13 +241,3 @@ def mergePropellerFiles(path,target_1,target_2,metric=False,dropDuplicates=True,
         pass
     
     return mergedf
-
-
-
-
-
-
-
-
-
-

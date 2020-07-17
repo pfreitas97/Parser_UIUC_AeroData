@@ -10,8 +10,6 @@ The propeller database is divided into 2 separate volumes, the primary differenc
 
 The majority of the code for wrangling propller data is included in the propeller_data_util file. It handles scrapping important information that is included only in the filename, such as the radius and pitch of the propeller. As well as determining the appropriate units for every file, and selecting only a specific subset of the data at a time. Currently I am ignoring several propellers by design (namely the ones that were 3D printed and/or do not include pitch information) since I did not personally need them for my purposes, but it should be a fairly easy fix if you're interested in those as well.
 
-In the near future I intend to add the ability to obtain a propeller object with all of the relevant test files for each propeller or a subset thereof. This is primarily intended for cases where some procedure must be performed on all propellers in the dataset (e.g. making a regression model, training a neural net, etc..).
-
 To use the `prop_File_Filter` simply provide a path to the directory containing the propeller datafiles, by default the function will parse all files in the target directory and return the results in **inches** however you can choose the metric option if you'd prefer **meters** or you can use the `contains` option if you'd like to only parse files that contain a specific substring, this can be useful when working exclusively with static test results or only propellers from APC, for instance.  The `verbose` option, when set to true, will printout the names of all the propeller files that were excluded because they were 3D printed or did not contain pitch information. A sample code usage is given below:
 
 ```python
@@ -19,6 +17,17 @@ filenames,diameters,pitches,AbsolutePaths = prop_File_Filter(path, contains="sta
 ```
 
 The line above would parse through every text file in `path` and output 4 lists, with the values in the diameter and pitch lists in meters, it would only return the static test files and would also print to console the name of every file that was not included due to the lack of pitch information.
+
+To use the `merge_propeller_files`  function provide a path to a directory containing all of the txt files you wish to parse, as well as the two substrings used to identify the type of files being merged. The function will return a pandas dataframe, with the following data: `[Propeller name,Diameter,Pitch,FilePath_1,FilePath_2]` where the first and second filepath point to the propeller files that contain the first and second substrings provided. A sample code usage below:
+
+
+```python
+Propeller_DataFrame = merge_propeller_files(path,"geom","static",metric=False,dropDuplicates=False,sort=True)
+```
+
+Here the geometric and static datafiles would be linked in the same dataframe, with each row corresponding to a propeller's specific data. Note that in this example duplicates would not b dropped so propellers with more than one configuration would be kept in the DataFrame, but on the flip side it would not be possible to use the names to uniquely identify each propeller.
+
+
 
 ## Airfoil Database
 
