@@ -25,7 +25,7 @@ To use the `merge_propeller_files`  function provide a path to a directory conta
 Propeller_DataFrame = merge_propeller_files(path,"geom","static",metric=False,dropDuplicates=False,sort=True)
 ```
 
-Here the geometric and static datafiles would be linked in the same dataframe, with each row corresponding to a propeller's specific data. Note that in this example duplicates would not b dropped so propellers with more than one configuration would be kept in the DataFrame, but on the flip side it would not be possible to use the names to uniquely identify each propeller.
+Here the geometric and static datafiles would be linked in the same dataframe, with each row corresponding to a propeller's specific data. Note that in this example duplicates would not be dropped so propellers with more than one configuration would be kept in the DataFrame, but on the flip side it would not be possible to use the names to uniquely identify each propeller.
 
 
 
