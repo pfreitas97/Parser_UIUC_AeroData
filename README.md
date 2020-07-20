@@ -1,4 +1,4 @@
-# UIUC-Aerodynamic-Data-Parser
+# UIUC Aerodynamic Data Parsing
 
 The Applied Aerodynamics Group at UIUC has created one of the largest databases of empirical test results for propellers, especially small propellers that are typically used in drones. In addition, the Group also hosts one of the largests databases of airfoil geometric files (1,550 distinct airfoils). All of these features make the use of UIUC's dataset very attractive to Aerospace Engineers looking to to test the accuracy of their models, conduct preliminary sizing estimates, among other uses. Unfortunately the entire database does not follow consistent conventions, making the simultaneous use of the entire database somewhat tedious at times. Since I could not find a public repo automating the data wrangling process I decided to publish mine. Hopefully this can help you in your projects as it has helped me in mine.
 
