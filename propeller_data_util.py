@@ -192,7 +192,7 @@ def prop_File_Filter(path, contains="all", metric=False, verbose=False):
 
 
 
-def merge_propeller_files(path,target_1,target_2,metric=False,dropDuplicates=True,sort=False):
+def merge_propeller_files(path,target_1="geom",target_2="static",metric=True,dropDuplicates=True,sort=False):
     '''Return single pandas dataframe where each file path column contains the path to the file with the target substring.
     Merges files based on Propeller name, drops duplicate names by default.
     
