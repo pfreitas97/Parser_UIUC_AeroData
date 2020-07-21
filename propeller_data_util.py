@@ -200,7 +200,7 @@ def merge_propeller_files(path,target_1="geom",target_2="static",metric=True,dro
     path: Absolute path to folder with propeller text files
     target_1: First substring for filetype (e.g. static, geom)
     target_2: Second substring for filetype (e.g. static, geom)
-    metric: Boolean return set to true if data in metric is preferred
+    metric: Boolean return set to false if data in inches is preferred
     dropDuplicates: Set to false if files that share the same filename are to be kept.
     sort: Set to true to return the dataframe in alphabetical order
     '''
@@ -235,7 +235,7 @@ def merge_propeller_files(path,target_1="geom",target_2="static",metric=True,dro
         
     mergedf.drop(['diameter_y','pitch_y'],axis=1,inplace=True)
     
-    mergedf.columns = ['Prop_Name','diameter','ptich',target_1 + '_path',target_2 + '_path']
+    mergedf.columns = ['Prop_Name','diameter','pitch',target_1 + '_path',target_2 + '_path']
     if sort:
         mergedf.sort_values(by='Prop_Name',ignore_index=True,inplace=True)
         pass

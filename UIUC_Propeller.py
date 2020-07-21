@@ -39,12 +39,10 @@ def _rescaleLinearly(targetVector,newLength):
 class UIUC_Propeller:
     def __init__(self,PropellerData):
         ''' Creates a propeller object to abstract away some of the complexity of integrating UIUC data into a project.
-        PropellerData should have the format [Prop_Name,Diameter,Pitch,geom_path,static_path] airfoil dataframe 
-        should have the format [alpha,CL,CD] equivalent to a cleaned version of the xfoil output.
+        PropellerData should have the format [Prop_Name,Diameter,Pitch,geom_path,static_path] 
         
         Params
         PropellerData = [str,float,float,str(path),str(path)]   
-        airfoil
         '''
         
         assert(os.path.exists(PropellerData[3]))
@@ -56,7 +54,8 @@ class UIUC_Propeller:
         
         self.b = 2
         
-        ''' above needs checking''' 
+
+
         
         self.NAME =  PropellerData[0]
         
@@ -112,11 +111,13 @@ class UIUC_Propeller:
     
     
     def getTrainingData(self,blade_elements=15):
-        ''' Return 2 matrices, the first one will contain all attributes of the propeller instance that called, 
-        attributes will either be their in their standard form or one that is most convinient 
-        (e.g. RPM will be converted to radians/sec, r/R and c/R will be rescaled to a fixed length, etc).
+        ''' Return propeller data in a format that is more convinient to use with tensorflow/pytorch.
+        Return 2 numpy 2d ndarrays, the first one will contain all attributes of the propeller instance that called, 
+        attributes will either be there in their standard form or one that is most convinient 
+        (i.e. RPM will be converted to radians/sec, twist will be returned in radians, r/R , c/R and twist
+        will be rescaled to a fixed number of data points).
         This first matrix will be of the form:
-        [b,Radius,Chord,RPM[in rad/s], r/R_rescaled,c/R_rescaled,twist_rescaled]
+        [b,Radius,Chord,RPM[in rad/s], r/R_rescaled,c/R_rescaled,twist_rescaled[rad]]
         
         In regression terms, this first matrix can be thought of as the 'predictors' or 'x'
         The dependent variables will be included in the second matrix and will be:
@@ -135,7 +136,7 @@ class UIUC_Propeller:
         
         C = self._getMaxChord()
         
-        # conversion: 
+        # conversion: 1RPM =  0.104719755 rad/s , 1 degree = pi/180 radians
         
         omega =  0.104719755 * np.array([self.RPMs])
         
@@ -143,7 +144,7 @@ class UIUC_Propeller:
         
         cR_rescaled = _rescaleLinearly(self.cR, blade_elements)
         
-        twist_rescaled = _rescaleLinearly(self.twist, blade_elements)
+        twist_rescaled = (np.pi/180) * _rescaleLinearly(self.twist, blade_elements)
         
         
         
@@ -173,5 +174,21 @@ class UIUC_Propeller:
         
         
         return [x_mat,y_mat]
+    
+    def getHoverData(self):
+        ''' Return list of propeller values in a format that is more convinient when calculating propeller 
+        hover performance dirrectly. Similar to getTrainingData function, except results are returned as a list of 
+        objects with different types.
+        
+        Return: [b,radius,C,omega[rad/s],rR,cR,twist[degrees]]. Note: No rescaling for r/R,c/R or twist.
+        '''
+        C = self._getMaxChord()
+        
+        # conversion: 1RPM =  0.104719755 rad/s , 1 degree = pi/180 radians
+        
+        omega =  np.array([self.RPMs])   
+        
+        return [self.b,self.Radius,C,omega,self.rR, self.cR, self.twist]
+            
     
     pass
