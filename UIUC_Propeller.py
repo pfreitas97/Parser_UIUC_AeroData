@@ -184,9 +184,9 @@ class UIUC_Propeller:
         '''
         C = self._getMaxChord()
         
-        # conversion: 1RPM =  0.104719755 rad/s , 1 degree = pi/180 radians
+        # conversion: 1RPM =  0.104719755 rad/s
         
-        omega =  np.array([self.RPMs])   
+        omega =  0.104719755 * np.array([self.RPMs])   
         
         return [self.b,self.Radius,C,omega,self.rR, self.cR, self.twist]
             
