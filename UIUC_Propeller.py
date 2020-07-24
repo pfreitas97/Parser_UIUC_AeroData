@@ -39,7 +39,7 @@ def _rescaleLinearly(targetVector,newLength):
 class UIUC_Propeller:
     def __init__(self,PropellerData):
         ''' Creates a propeller object to abstract away some of the complexity of integrating UIUC data into a project.
-        PropellerData should have the format [Prop_Name,Diameter,Pitch,geom_path,static_path] 
+        PropellerData should be a list, or panda.series and have the format [Prop_Name,Diameter,Pitch,geom_path,static_path]
         
         Params
         PropellerData = [str,float,float,str(path),str(path)]   
@@ -175,12 +175,13 @@ class UIUC_Propeller:
         
         return [x_mat,y_mat]
     
-    def getHoverData(self):
-        ''' Return list of propeller values in a format that is more convinient when calculating propeller 
-        hover performance dirrectly. Similar to getTrainingData function, except results are returned as a list of 
+    def getRotorData(self):
+        ''' Return list of propeller values in a format that is more convinient for directly calculating propeller 
+        hover performance. Similar to getTrainingData function, except results are returned as a list of 
         objects with different types.
         
-        Return: [b,radius,C,omega[rad/s],rR,cR,twist[degrees]]. Note: No rescaling for r/R,c/R or twist.
+        Return: [b,radius,C,omega[rad/s],rR,cR,twist[degrees]]. Note: Angular velocity is returned in radians/sec and
+        r/R,c/R and twist are returned as tuples with no rescaling.
         '''
         C = self._getMaxChord()
         
@@ -189,6 +190,5 @@ class UIUC_Propeller:
         omega =  0.104719755 * np.array([self.RPMs])   
         
         return [self.b,self.Radius,C,omega,self.rR, self.cR, self.twist]
-            
     
     pass
